@@ -60,6 +60,8 @@ The service will start and listen on the configured port (see `main.go` for deta
 - **Transactions Table as Ledger and History:**  
   The `transactions` table serves as a ledger for all balance changes. It can also be used to track and debug the history of attempted and completed transactions for accounts.
 
+- **Transactions IDs are sequential:**  
+  The `transactions` table primary key (ID) also serves as its transaction ID and is sequential instead of generated.
 ## API Endpoints
 
 ### `POST /accounts`
@@ -104,8 +106,7 @@ Create a new transaction between accounts.
       "SourceAccountID": 1,
       "DestinationAccountID": 2,
       "Amount": 50.0,
-      "Status": "success",
-      "ErrorReason": ""
+      "Status": "success"
     }
   }
   ```
