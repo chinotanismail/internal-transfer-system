@@ -102,7 +102,7 @@ Create a new transaction between accounts.
   {
     "message": "Transaction created successfully",
     "transaction": {
-      "ID": 1,
+      "id": 1,
       "source_account_id": 1,
       "destination_Account_id": 2,
       "amount": 50.0,
