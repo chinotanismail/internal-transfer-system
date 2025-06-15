@@ -103,10 +103,11 @@ Create a new transaction between accounts.
     "message": "Transaction created successfully",
     "transaction": {
       "ID": 1,
-      "SourceAccountID": 1,
-      "DestinationAccountID": 2,
-      "Amount": 50.0,
-      "Status": "success"
+      "source_account_id": 1,
+      "destination_Account_id": 2,
+      "amount": 50.0,
+      "created_at":"2025-06-15T19:33:17.99096+07:00",
+      "status": "success"
     }
   }
   ```
