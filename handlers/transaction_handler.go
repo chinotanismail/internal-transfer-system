@@ -31,17 +31,23 @@ func CreateTransaction(c *gin.Context) {
 		return
 	}
 
+	var status string = "success"
+	var transaction models.Transaction
+
 	err = config.DB.Transaction(func(tx *gorm.DB) error {
 		var source, dest models.Account
 
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&source, input.SourceAccountID).Error; err != nil {
+			status = "failed"
 			return err
 		}
 		if source.Balance < amount {
+			status = "failed"
 			return errors.New("insufficient funds")
 		}
 
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&dest, input.DestinationAccountID).Error; err != nil {
+			status = "failed"
 			return err
 		}
 
@@ -49,24 +55,39 @@ func CreateTransaction(c *gin.Context) {
 		dest.Balance += amount
 
 		if err := tx.Save(&source).Error; err != nil {
+			status = "failed"
 			return err
 		}
 		if err := tx.Save(&dest).Error; err != nil {
+			status = "failed"
 			return err
 		}
 
-		transaction := models.Transaction{
+		transaction = models.Transaction{
 			SourceAccountID:      source.AccountID,
 			DestinationAccountID: dest.AccountID,
 			Amount:               amount,
+			Status:               status,
 		}
-		return tx.Create(&transaction).Error
+		return nil
 	})
 
 	if err != nil {
+		// Log failed transaction with error reason
+		transaction = models.Transaction{
+			SourceAccountID:      input.SourceAccountID,
+			DestinationAccountID: input.DestinationAccountID,
+			Amount:               amount,
+			Status:               "failed",
+			ErrorReason:          err.Error(),
+		}
+		config.DB.Create(&transaction)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Log successful transaction
+	transaction.Status = "success"
+	config.DB.Create(&transaction)
 	c.Status(http.StatusOK)
 }
