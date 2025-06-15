@@ -89,5 +89,8 @@ func CreateTransaction(c *gin.Context) {
 	// Log successful transaction
 	transaction.Status = "success"
 	config.DB.Create(&transaction)
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"message":     "Transaction created successfully",
+		"transaction": transaction,
+	})
 }
