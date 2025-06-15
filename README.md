@@ -65,8 +65,18 @@ The service will start and listen on the configured port (see `main.go` for deta
 ### `POST /accounts`
 Create a new account.
 
-- **Request Body:** JSON object with required account details (e.g., initial balance).
-- **Response:** JSON object with the created account's information.
+- **Request Body:** JSON object with required account details:
+  ```json
+  {
+    "account_id": 123,
+    "initial_balance": "100.00"
+  }
+  ```
+- **Success Response:** HTTP 200 OK with an empty body.
+- **Error Response:** HTTP 400/500 with JSON:
+  ```json
+  { "error": "Error message" }
+  ```
 
 ### `GET /accounts/:account_id`
 Retrieve account information by account ID.
@@ -77,5 +87,29 @@ Retrieve account information by account ID.
 ### `POST /transactions`
 Create a new transaction between accounts.
 
-- **Request Body:** JSON object specifying source account, destination account, amount, and any other required transaction details.
-- **Response:** JSON object with the transaction result and updated balances.
+- **Request Body:** JSON object specifying source account, destination account, and amount:
+  ```json
+  {
+    "source_account_id": 1,
+    "destination_account_id": 2,
+    "amount": "50.00"
+  }
+  ```
+- **Success Response:** HTTP 200 OK with JSON:
+  ```json
+  {
+    "message": "Transaction created successfully",
+    "transaction": {
+      "ID": 1,
+      "SourceAccountID": 1,
+      "DestinationAccountID": 2,
+      "Amount": 50.0,
+      "Status": "success",
+      "ErrorReason": ""
+    }
+  }
+  ```
+- **Error Response:** HTTP 400/500 with JSON:
+  ```json
+  { "error": "Error message" }
+  ```
